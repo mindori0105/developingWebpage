@@ -1,0 +1,51 @@
+drop database if exists santabass;
+
+create database santabass default character set utf8 collate utf8_general_ci;
+use santabass;
+
+create table gundam(
+	id int(11) not null auto_increment,
+	name varchar(50) default null,
+	model varchar(50) default null,
+	image varchar(255) default null,
+	primary key(id),
+	index(name)
+)engine=InnoDB default character set utf8 collate utf8_general_ci;
+
+create table pilot(
+	id int(11) not null auto_increment,
+	name varchar(50) not null,
+	movie varchar(100),
+	primary key(id),
+	index(name)
+)default character set utf8 collate utf8_general_ci;
+
+create table control(
+	uid int(11) not null,
+	pid int(11) not null,
+	primary key (uid,pid)
+);
+set names euckr;
+
+insert into gundam (id, name, model, image) values 
+(1, "건담", "RX-78-2", "건담.jpg"),
+(2, "알렉스", "RX-78 NT-1", "알렉스.jpg"),
+(3, "건탱크", "RX-75-4", "건탱크.jpg"),
+(4, "건캐논", "RX-77-2", "건캐논.jpg"),
+(5, "GM", "RGM-79", "GM.jpg"),
+(6, "자쿠1", "MS-05", "자쿠1.jpg"),
+(7, "자쿠2", "MS-06", "자쿠2.jpg"),
+(8, "자쿠2 샤아전용", "MS-06S", "자쿠2 사야전용.jpg"),
+(9, "돔", "MS-09", "돔.jpg"),
+(10, "릭돔", "MS-09R", "릭돔.jpg"),
+(11, "뉴건담", "RX-93","뉴건담.jpg");
+
+insert into pilot values (null, "크리스티나 맥켄지", "0080 주머니 속의 전쟁");
+insert into pilot values (null, "아무로 레이", "기동 전사 건담");
+
+insert into control values (1, 2);
+insert into control values (2, 1);
+
+select * from unit, control, pilot where unit.id = control.uid and pilot.id = control.pid;
+select * from unit join control on(unit.id = control.uid) join pilot on (pilot.id = control.pid);
+select unit.name as "unit name", pilot.name as "pilot name", movie from unit, control, pilot where unit.id = control.uid and pilot.id = control.pid;

@@ -1,0 +1,185 @@
+﻿
+
+insert into unit values (null, "건담", "RX-78-2");
+insert into unit values (null, "알렉스", "RX-78 NT-1");
+insert into unit values (null, "건탱크", "RX-75-4");
+insert into unit values (null, "건캐논", "RX-77-2");
+insert into unit values (null, "GM", "RGM-79");
+insert into unit values (null, "자쿠1", "MS-05");
+insert into unit values (null, "자쿠2", "MS-06");
+insert into unit values (null, "자쿠2 샤아전용", "MS-06S");
+insert into unit values (null, "돔", "MS-09");
+insert into unit values (null, "릭돔", "MS-09R");
+insert into unit values (null, "뉴건담", "RX-93");
+
+insert into pilot values (null, "크리스티나 맥켄지", "0080 주머니 속의 전쟁");
+insert into pilot values (null, "아무로 레이", "기동 전사 건담");
+
+insert into control values (1, 2);
+insert into control values (2, 1);
+
+select * from unit, control, pilot where unit.id = control.uid and pilot.id = control.pid;
+select * from unit join control on(unit.id = control.uid) join pilot on (pilot.id = control.pid);
+select unit.name as "unit name", pilot.name as "pilot name", movie from unit, control, pilot where unit.id = control.uid and pilot.id = control.pid;
+
+create table user(
+	id int(11) not null auto_increment,
+	email varchar(50) not null,
+	password varchar(40) not null,
+	PRIMARY KEY(id),
+	INDEX(email)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+set names euckr;
+insert into user values (null, "a@b.com", "a");
+
+alter table user add image varchar(255) default './images/sd.jpg';
+
+drop table user;
+
+==========================================
+DROP DATABASE IF EXISTS SANTABASS;
+
+CREATE DATABASE SANTABASS DEFAULT CHARACTER SET UTF8 COLLATE UTF8_GENERAL_CI;
+USE SANTABASS;
+
+CREATE TABLE mountain(
+	id INT(11) NOT NULL AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	altitude INT(5),
+	location VARCHAR(50) NOT NULL,
+	mtype BOOLEAN DEFAULT FALSE,
+	PRIMARY KEY(id),
+	INDEX(name)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE TABLE route(
+	id INT(11) NOT NULL AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	start VARCHAR(50) NOT NULL,
+	finish VARCHAR(50) NOT NULL,
+	waypoints VARCHAR(100),
+	PRIMARY KEY(id),
+	INDEX(name)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE TABLE has(
+	mid INT(11) NOT NULL,
+	rid INT(11) NOT NULL,
+	PRIMARY KEY (uid,pid)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+set names euckr;
+
+CREATE TABLE user(
+	id INT(11) NOT NULL AUTO_INCREMENT,
+	email VARCHAR(50) NOT NULL,
+	password VARCHAR(40) NOT NULL,
+	image MEDIUMBLOB,
+	PRIMARY KEY(id),
+	INDEX(email)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+drop table review;
+CREATE TABLE review(
+	reviewid INT(11) NOT NULL AUTO_INCREMENT,
+	userid INT(11) NOT NULL,
+	name varchar(50),
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	picture MEDIUMBLOB,
+	memo TEXT DEFAULT NULL,
+	PRIMARY KEY(reviewid),
+	FOREIGN KEY(userid) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	INDEX(time)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+drop table rreply;
+CREATE TABLE rreply(
+	rreplyid INT(11) NOT NULL AUTO_INCREMENT,
+	reviewid INT(11) NOT NULL,
+	userid INT(11) NOT NULL,
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	memo TEXT DEFAULT NULL,
+	PRIMARY KEY(rreplyid),
+	FOREIGN KEY(reviewid) REFERENCES review(reviewid) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(userid) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	INDEX(reviewid),
+	INDEX(time)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+drop table picture;
+CREATE TABLE picture(
+	pictureid INT(11) NOT NULL AUTO_INCREMENT,
+	userid INT(11) NOT NULL,
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	picture MEDIUMBLOB,
+	PRIMARY KEY(pictureid),
+	FOREIGN KEY(userid) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	INDEX(time)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+drop table preply;
+CREATE TABLE preply(
+	preplyid INT(11) NOT NULL AUTO_INCREMENT,
+	pictureid INT(11) NOT NULL,
+	userid INT(11) NOT NULL,
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	memo TEXT DEFAULT NULL,
+	PRIMARY KEY(preplyid),
+	FOREIGN KEY(pictureid) REFERENCES picture(pictureid) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(userid) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	INDEX(pictureid),
+	INDEX(time)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+drop table free;
+CREATE TABLE free(
+	freeid INT(11) NOT NULL AUTO_INCREMENT,
+	userid INT(11) NOT NULL,
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	emo TEXT DEFAULT NULL,
+	PRIMARY KEY(freeid),
+	FOREIGN KEY(userid) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	INDEX(time)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+drop table freply;
+CREATE TABLE freply(
+	freplyid INT(11) NOT NULL AUTO_INCREMENT,
+	freeid INT(11) NOT NULL,
+	userid INT(11) NOT NULL,
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	memo TEXT DEFAULT NULL,
+	PRIMARY KEY(freplyid),
+	FOREIGN KEY(freeid) REFERENCES free(freeid) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(userid) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	INDEX(freeid),
+	INDEX(time)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+drop table event;
+CREATE TABLE event(
+	eventid INT(11) NOT NULL AUTO_INCREMENT,
+	userid INT(11) NOT NULL,
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	picture MEDIUMBLOB,
+	memo TEXT DEFAULT NULL,
+	PRIMARY KEY(eventid),
+	FOREIGN KEY(userid) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	INDEX(time)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+drop table ereply;
+CREATE TABLE ereply(
+	ereplyid INT(11) NOT NULL AUTO_INCREMENT,
+	eventid INT(11) NOT NULL,
+	userid INT(11) NOT NULL,
+	time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	memo TEXT DEFAULT NULL,
+	PRIMARY KEY(ereplyid),
+	FOREIGN KEY(eventid) REFERENCES event(eventid) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(userid) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	INDEX(eventid),
+	INDEX(time)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+
